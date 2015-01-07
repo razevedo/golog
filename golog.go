@@ -68,24 +68,19 @@ func StartFile(logLevel int32, baseFilePath string) {
 		log.Fatalf("main : Start : Failed to Create log file : %s : %s\n", fileName, err)
 	}
 
-	// Turn the logging on
+	
 	turnOnLogging(logLevel, logf)
 
-	// Cleanup any existing directories
-	//logger.LogDirectoryCleanup(baseFilePath, daysToKeep)
+	
 }
 
 // Stop will release resources and shutdown all processing.
 func Stop() error {
-	//Started("main", "Stop")
-
 	var err error
 	if logger.LogFile != nil {
 		Trace("main", "Stop", "Closing File")
 		err = logger.LogFile.Close()
 	}
-
-//	Completed("main", "Stop")
 	return err
 }
 
