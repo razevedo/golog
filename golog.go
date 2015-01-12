@@ -25,8 +25,8 @@ const (
 	LevelError int32 = 8
 )
 
-// traceLog provides support to write to log files.
-type traceLog struct {
+// goLogStruct provides support to write to log files.
+type goLogStruct struct {
 	LogLevel           int32
 	Trace              *log.Logger
 	Info               *log.Logger
@@ -37,19 +37,23 @@ type traceLog struct {
 }
 
 // log maintains a pointer to a singleton for the logging system.
-var logger traceLog
+var logger goLogStruct
 
 // Called to init the logging system.
-func Init(logLevel int32, baseFilePath string) {
+func (lS goLogStruct) Init(logLevel int32, baseFilePath string) error {
 	log.SetPrefix("TRACE: ")
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
-	StartFile(logLevel, baseFilePath)
+	err := startFile(logLevel, baseFilePath)
+	if(err != nil)
+		return err;
+	lS = logger
+	return 
 }
 
 
-// StartFile initializes tracelog and only displays the specified logging level
+// StartFile initializes goLogStruct and only displays the specified logging level
 // and creates a file to capture writes.
-func StartFile(logLevel int32, baseFilePath string) {
+func startFile(logLevel int32, baseFilePath string) error {
 	baseFilePath = strings.TrimRight(baseFilePath, "/")
 	currentDate := time.Now().UTC()
 	dateDirectory := time.Now().UTC().Format("2006-01-02")
@@ -61,16 +65,18 @@ func StartFile(logLevel int32, baseFilePath string) {
 	err := os.MkdirAll(filePath, os.ModePerm)
 	if err != nil {
 		log.Fatalf("main : Start : Failed to Create log directory : %s : %s\n", filePath, err)
+		return err
 	}
 
 	logf, err := os.Create(fmt.Sprintf("%s%s", filePath, fileName))
 	if err != nil {
 		log.Fatalf("main : Start : Failed to Create log file : %s : %s\n", fileName, err)
+		return err
 	}
 
 	
 	turnOnLogging(logLevel, logf)
-
+	return 
 	
 }
 
@@ -86,7 +92,7 @@ func Stop() error {
 
 
 // LogLevel returns the configured logging level.
-func LogLevel() int32 {
+func GetLogLevel() int32 {
 	return atomic.LoadInt32(&logger.LogLevel)
 }
 
