@@ -48,7 +48,7 @@ func (lS GoLogStruct) Init(logLevel int32, baseFilePath string) error {
 	if err != nil {
 		return err;
 	}
-	lS = logger
+	lS = &logger
 	return err
 }
 
