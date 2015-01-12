@@ -29,10 +29,10 @@ const (
 // goLogStruct provides support to write to log files.
 type goLogStruct struct {
 	LogLevel           int32
-	Trace              *log.Logger
-	Info               *log.Logger
-	Warning            *log.Logger
-	Error              *log.Logger
+	MyTrace              *log.Logger
+	MyInfo               *log.Logger
+	MyWarning            *log.Logger
+	MyError              *log.Logger
 	File               *log.Logger
 	LogFile            *os.File
 }
@@ -89,19 +89,19 @@ func startFile(logLevel int32, baseFilePath string) error {
 }
 
 // Stop will release resources and shutdown all processing.
-func Stop() error {
+func (lS goLogStruct) Stop() error {
 	var err error
-	if logger.LogFile != nil {
-		Trace("main", "Stop", "Closing File")
-		err = logger.LogFile.Close()
+	if lS.LogFile != nil {
+		//Trace("main", "Stop", "Closing File")
+		err = lS.LogFile.Close()
 	}
 	return err
 }
 
 
 // LogLevel returns the configured logging level.
-func GetLogLevel() int32 {
-	return atomic.LoadInt32(&logger.LogLevel)
+func (lS goLogStruct) GetLogLevel() int32 {
+	return atomic.LoadInt32(&lS.LogLevel)
 }
 
 // turnOnLogging configures the logging writers.
@@ -151,10 +151,10 @@ func turnOnLogging(logLevel int32, fileHandle io.Writer) {
 		}
 	}
 
-	logger.Trace = log.New(traceHandle, "TRACE: ", log.Ldate|log.Ltime|log.Lshortfile)
-	logger.Info = log.New(infoHandle, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
-	logger.Warning = log.New(warnHandle, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
-	logger.Error = log.New(errorHandle, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
+	logger.MyTrace = log.New(traceHandle, "TRACE: ", log.Ldate|log.Ltime|log.Lshortfile)
+	logger.MyInfo = log.New(infoHandle, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
+	logger.MyWarning = log.New(warnHandle, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
+	logger.MyError = log.New(errorHandle, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 
 	atomic.StoreInt32(&logger.LogLevel, logLevel)
 }
@@ -164,34 +164,34 @@ func turnOnLogging(logLevel int32, fileHandle io.Writer) {
 //** TRACE
 
 // Trace writes to the Trace destination
-func Trace(format string, a ...interface{}) {
-	logger.Trace.Output(2, fmt.Sprintf("%s\n", fmt.Sprintf(format, a...)))
+func (lS goLogStruct) Trace(format string, a ...interface{}) {
+	lS.MyTrace.Output(2, fmt.Sprintf("%s\n", fmt.Sprintf(format, a...)))
 }
 
 //** INFO
 
 // Info writes to the Info destination
-func Info(format string, a ...interface{}) {
-	logger.Info.Output(2, fmt.Sprintf(fmt.Sprintf(format, a...)))
+func (lS goLogStruct) Info(format string, a ...interface{}) {
+	lS.MyInfo.Output(2, fmt.Sprintf(fmt.Sprintf(format, a...)))
 }
 
 //** WARNING
 
 // Warning writes to the Warning destination
-func Warning(format string, a ...interface{}) {
-	logger.Warning.Output(2, fmt.Sprintf(fmt.Sprintf(format, a...)))
+func (lS goLogStruct) Warning(format string, a ...interface{}) {
+	lS.MyWarning.Output(2, fmt.Sprintf(fmt.Sprintf(format, a...)))
 }
 
 //** ERROR
 
 // Error writes to the Error destination and accepts an err
-func Error(format string, a ...interface{}) {
-	logger.Error.Output(2, fmt.Sprintf(fmt.Sprintf(format, a...)))
+func (lS goLogStruct) Error(format string, a ...interface{}) {
+	lS.MyError.Output(2, fmt.Sprintf(fmt.Sprintf(format, a...)))
 }
 
 //writes to the Error and exit(1)
-func Fatal(format string, a ...interface{}) {
-	logger.Error.Output(2, fmt.Sprintf(fmt.Sprintf(format, a...)))
+func (lS goLogStruct) Fatal(format string, a ...interface{}) {
+	lS.MyError.Output(2, fmt.Sprintf(fmt.Sprintf(format, a...)))
 	os.Exit(1)
 }
 
