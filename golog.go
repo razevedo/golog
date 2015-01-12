@@ -44,7 +44,7 @@ func (lS goLogStruct) Init(logLevel int32, baseFilePath string) error {
 	log.SetPrefix("TRACE: ")
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	err := startFile(logLevel, baseFilePath)
-	if(err != nil)
+	if err != nil
 		return err;
 	lS = logger
 	return 
