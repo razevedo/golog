@@ -10,6 +10,7 @@ import (
     "strings"
     "time"
     "sync/atomic"
+    "errors"
 )
 const (
 	// everything
@@ -51,6 +52,12 @@ func (lS goLogStruct) Init(logLevel int32, baseFilePath string) error {
 	return err
 }
 
+func GetLoggerInstance() (goLogStruct, error) {
+	if &logger == nil {
+		return logger, errors.New("Logger not initialized")
+	}
+	return logger, nil
+}
 
 // StartFile initializes goLogStruct and only displays the specified logging level
 // and creates a file to capture writes.
