@@ -26,8 +26,8 @@ const (
 	LevelError int32 = 8
 )
 
-// goLogStruct provides support to write to log files.
-type goLogStruct struct {
+// GoLogStruct provides support to write to log files.
+type GoLogStruct struct {
 	LogLevel           int32
 	MyTrace              *log.Logger
 	MyInfo               *log.Logger
@@ -38,10 +38,10 @@ type goLogStruct struct {
 }
 
 // log maintains a pointer to a singleton for the logging system.
-var logger goLogStruct
+var logger GoLogStruct
 
 // Called to init the logging system.
-func (lS goLogStruct) Init(logLevel int32, baseFilePath string) error {
+func (lS GoLogStruct) Init(logLevel int32, baseFilePath string) error {
 	log.SetPrefix("TRACE: ")
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	err := startFile(logLevel, baseFilePath)
@@ -52,14 +52,14 @@ func (lS goLogStruct) Init(logLevel int32, baseFilePath string) error {
 	return err
 }
 
-func GetLoggerInstance() (goLogStruct, error) {
+func GetLoggerInstance() (GoLogStruct, error) {
 	if &logger == nil {
 		return logger, errors.New("Logger not initialized")
 	}
 	return logger, nil
 }
 
-// StartFile initializes goLogStruct and only displays the specified logging level
+// StartFile initializes GoLogStruct and only displays the specified logging level
 // and creates a file to capture writes.
 func startFile(logLevel int32, baseFilePath string) error {
 	baseFilePath = strings.TrimRight(baseFilePath, "/")
@@ -89,7 +89,7 @@ func startFile(logLevel int32, baseFilePath string) error {
 }
 
 // Stop will release resources and shutdown all processing.
-func (lS goLogStruct) Stop() error {
+func (lS GoLogStruct) Stop() error {
 	var err error
 	if lS.LogFile != nil {
 		//Trace("main", "Stop", "Closing File")
@@ -100,7 +100,7 @@ func (lS goLogStruct) Stop() error {
 
 
 // LogLevel returns the configured logging level.
-func (lS goLogStruct) GetLogLevel() int32 {
+func (lS GoLogStruct) GetLogLevel() int32 {
 	return atomic.LoadInt32(&lS.LogLevel)
 }
 
@@ -164,33 +164,33 @@ func turnOnLogging(logLevel int32, fileHandle io.Writer) {
 //** TRACE
 
 // Trace writes to the Trace destination
-func (lS goLogStruct) Trace(format string, a ...interface{}) {
+func (lS GoLogStruct) Trace(format string, a ...interface{}) {
 	lS.MyTrace.Output(2, fmt.Sprintf("%s\n", fmt.Sprintf(format, a...)))
 }
 
 //** INFO
 
 // Info writes to the Info destination
-func (lS goLogStruct) Info(format string, a ...interface{}) {
+func (lS GoLogStruct) Info(format string, a ...interface{}) {
 	lS.MyInfo.Output(2, fmt.Sprintf(fmt.Sprintf(format, a...)))
 }
 
 //** WARNING
 
 // Warning writes to the Warning destination
-func (lS goLogStruct) Warning(format string, a ...interface{}) {
+func (lS GoLogStruct) Warning(format string, a ...interface{}) {
 	lS.MyWarning.Output(2, fmt.Sprintf(fmt.Sprintf(format, a...)))
 }
 
 //** ERROR
 
 // Error writes to the Error destination and accepts an err
-func (lS goLogStruct) Error(format string, a ...interface{}) {
+func (lS GoLogStruct) Error(format string, a ...interface{}) {
 	lS.MyError.Output(2, fmt.Sprintf(fmt.Sprintf(format, a...)))
 }
 
 //writes to the Error and exit(1)
-func (lS goLogStruct) Fatal(format string, a ...interface{}) {
+func (lS GoLogStruct) Fatal(format string, a ...interface{}) {
 	lS.MyError.Output(2, fmt.Sprintf(fmt.Sprintf(format, a...)))
 	os.Exit(1)
 }
